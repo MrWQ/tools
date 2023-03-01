@@ -224,7 +224,12 @@ function showlist() {
                         var cve_code = item["cve_code"]
                         // item_content = item["description"] + "\n" + item["poc"]
                         // console.log(item_content)
-                        var cve_content = item["description"] + "<br>" +  markdown.toHTML(item["poc"]);
+                        var cve_content = item["description"] + "<br>";
+                        var poc_content = "";
+                        for(i=0;i<item["poc"].length;i++){
+                            poc_content = poc_content +item["poc"][i] + "<br>";
+                        }
+                        cve_content = cve_content + poc_content;
 
                         l_htmlStr += '<li class="list_con_li"><h2 class="list_news_tit">'+cve_code+'</h2>'
                         l_htmlStr += '<div class="box2">'+cve_content+'</div></li>'
