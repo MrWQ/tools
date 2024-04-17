@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="static/main.css" type="text/css" />
     <script src="static/markdown.min.js"></script>
     <!--    看板娘-->
-    <script src="https://cdn.jsdelivr.net/gh/MrWQ/mrwq.github.io@master/live2d-widget/autoload.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/MrWQ/tools@master/live2d-widget/autoload.js"></script>
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css">
 </head>
 <body>
@@ -190,8 +190,11 @@ function showlist() {
     var keyword = $("#search").val().toLowerCase();
     console.log(keyword);
 
-
-    var url = "https://cdn.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    var url = "https://raw.githubusercontent.com/MrWQ/cve_description/master/cve_description_poc.json"
+    if (getQueryVariable("cdn") == "1"){
+        console.log("cdn")
+        var url = "https://cdn.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    }
 
     var httpRequest = new XMLHttpRequest();
     // httpRequest.open('GET', 'https://cdn.jsdelivr.net/gh/ycdxsb/PocOrExp_in_Github@main/Today.md', true);
@@ -324,7 +327,27 @@ tl.eventCallback("onComplete", function() {
     intro = false
 });
 </script>
-
+<script>
+//定义一个函数，接受一个参数名作为参数
+function getQueryVariable(variable) {
+    //获取当前URL中的查询字符串部分（即问号后面的部分）
+    var query = window.location.search.substring(1);
+    //把查询字符串按照&符号分割成数组
+    var vars = query.split("&");
+    //遍历数组中的每个元素
+    for (var i = 0; i < vars.length; i++) {
+        //把当前元素按照=符号分割成键和值
+        var pair = vars[i].split("=");
+        //如果当前元素的键等于参数名，则返回对应的值
+        if (pair[0] == variable) {
+            return pair[1];
+        }
+    }
+    //如果没有找到匹配的参数名，则返回false
+    return false;
+}
+// console.log(getQueryVariable("cdn"))
+</script>
 <script>
 $(document).ready(function(){
   $("#main").hide();
