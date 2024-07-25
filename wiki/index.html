@@ -1,15 +1,16 @@
 <html>
 <head>
     <!--    看板娘-->
-    <script src="https://cdn.jsdelivr.net/gh/MrWQ/tools@master/live2d-widget/autoload.js"></script>
+    <script src="https://fastly.jsdelivr.net/gh/MrWQ/mrwq.github.io@master/live2d-widget/autoload.js"></script>
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CVE搜索</title>
+    <title>文章搜索</title>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="static/main.css" type="text/css" />
-    <script src="static/markdown.min.js"></script>
+
 </head>
+
+
 <body>
 <div id="search_div" class="search_div">
     <svg width="100%" height="100%" viewBox="0 0 936 364" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="https://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
@@ -54,7 +55,9 @@
     <div id="main_l">
 
     </div>
+    <div id="main_r">
 
+    </div>
 </div>
 
 
@@ -175,94 +178,66 @@ function keyword_filter(all_data, keyword) {
 // function get_paper_title(url) {
 //
 // }
+    function change_name(name) {
+        var new_name = name
+        if(name.includes(".md")){
+            // 去掉末尾的.md
+            new_name = name.slice(0,name.length-3)
+            // console.log(new_name)
+        }
+        return new_name
+    }
+
 
 function showlist() {
     //  先隐藏搜索结果
     $("#main").hide();
-    var data;
+    var data
     var l_htmlStr = "";
+    var r_htmlStr = "";
+    var httpRequest = new XMLHttpRequest();
 
-    var keyword = $("#search").val().toLowerCase();
-    console.log(keyword);
-    var ptt = new RegExp("cve-\\d{4}-\\d+");
-    var flag = ptt.test(keyword);
-    console.log(flag)
-    if(flag === true){
-        var year_ptt = new RegExp("cve-(\\d{4})-\\d+");
-        var year = year_ptt.exec(keyword)
-        // console.log(year)
-        year = year[1]
-        console.log(year)
+    httpRequest.open('GET', 'https://fastly.jsdelivr.net/gh/MrWQ/vulnerability-wiki@master/docs/vulnerability-wiki.json', true);
 
 
-        var url = "https://raw.githubusercontent.com/ycdxsb/PocOrExp_in_Github/main/"+year+"/README.md"
-        if (getQueryVariable("cdn") == "1"){
-            console.log("cdn")
-            //var url = "https://cdn.jsdelivr.net/gh/ycdxsb/PocOrExp_in_Github@main/"+year+"/README.md"
-            var url = "https://fastly.jsdelivr.net/gh/ycdxsb/PocOrExp_in_Github@main/"+year+"/README.md"
-        }
+    httpRequest.send();
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+            data = httpRequest.responseText;
+            // var json_data = jQuery.parseJSON(data)
+            var json_data = JSON.parse(data)
+            // console.log(json_data);
 
-        var httpRequest = new XMLHttpRequest();
-        // httpRequest.open('GET', 'https://cdn.jsdelivr.net/gh/ycdxsb/PocOrExp_in_Github@main/Today.md', true);
-        httpRequest.open('GET', url, true);
+            keyword = $("#search").val();
+            console.log(keyword)
 
-        httpRequest.send();
-        httpRequest.onreadystatechange = function () {
-            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-                data = httpRequest.responseText;
-                var reg = new RegExp("\n\n\n","g")
-                data = data.replace(reg,"\n")
-                reg = new RegExp("##","g")
-                data = data.replace(reg,"\n\n##")
-                var data_result = data.split("\n\n\n")
-                console.log(data_result);
-                for(i=0;i<data_result.length;i++){
-                    console.log(data_result[i])
-                    var item = data_result[i].split("\n")
-                    console.log(item)
-                }
+            if(keyword.length > 0){
+                // 过滤关键字之后的列表
+                filtered_list = keyword_filter(json_data, keyword)
+                // console.log(filtered_list)
 
-                if(keyword.length > 0){
-                    // 过滤关键字之后的列表
-                    var filtered_list = keyword_filter(data_result, keyword)
-                    // console.log(filtered_list)
+                var filtered_list_length = filtered_list.length
+                var l_length = Math.ceil(filtered_list_length/2)
+                var r_legth = filtered_list_length - l_length
+                console.log(filtered_list_length,l_length,r_legth);
+                if(filtered_list_length > 0){
+                    //
+                    var l_list = filtered_list.slice(0,l_length)
+                    var r_list = filtered_list.slice(l_length,filtered_list_length)
+                    // console.log(l_list,r_list)
 
-                    var filtered_list_length = filtered_list.length
-                    if(filtered_list_length > 0){
-                        // <h2 class="list_news_tit">jQuery完美仿Flash大banner图片播放展示</h2>
-                        // <div class="box2"> 使用jQuery完美仿Flash大banner图片播放展示效果，图片变化的过程中文字也随之变化，交结合CSS实现半透明效果，在火狐、IE6/IE8下均测试通过，兼容性感觉不错，不过有点不好的地方是，有时候动画不是很流畅，可能代码还需要优化，也请高手帮忙指导一下。 </div></li>
-
-                        // filtered_list.forEach((item)=>{l_htmlStr += '<li class="list_con_li"><h2 class="list_news_tit"><a href="https://github.com/MrWQ/vulnerability-paper/blob/master'+ item +'" target="_blank">'+ item +'</a></h2></li>'})
-                        // filtered_list.forEach((item)=>{l_htmlStr += markdown.toHTML(item);})
-                        filtered_list.forEach((item)=>{
-                            // console.log(item)
-                            var item_html = markdown.toHTML(item);
-                            var cve_list = item_html.split("</h2>\n\n")
-                            var a = cve_list[0].indexOf("<h2>")
-                            var cve_code = cve_list[0].substring(a+4,)
-                            var cve_content = cve_list[1]
-                            l_htmlStr += '<li class="list_con_li"><h2 class="list_news_tit">'+cve_code+'</h2>'
-                            l_htmlStr += '<div class="box2">'+cve_content+'</div></li>'
-                        })
-
-                    }else {
-                        l_htmlStr = "没有搜索结果"
-                    }
-
-
+                    l_list.forEach((item)=>{l_htmlStr += '<li class="list_con_li"><h2 class="list_news_tit"><a href="https://mrwq.github.io/vulnerability-wiki/#'+ change_name(item) +'" target="_blank">'+ item +'</a></h2></li>'})
                     $("#main_l").html(l_htmlStr);
+
+                    r_list.forEach((item)=>{r_htmlStr += '<li class="list_con_li"><h2 class="list_news_tit"><a href="https://mrwq.github.io/vulnerability-wiki/#'+ change_name(item) +'" target="_blank">'+ item +'</a></h2></li>'})
+                    $("#main_r").html(r_htmlStr);
 
                     // 展示搜索结果
                     $('#main').show();
                 }
             }
-        };
-
-
-    }else {
-        $("#main_l").html("输入cve号码：例如 <b>cve-2021-44228</b>");
-        $('#main').show();
-    }
+        }
+    };
 }
 
 var tl = new TimelineLite();
@@ -334,27 +309,7 @@ tl.eventCallback("onComplete", function() {
     intro = false
 });
 </script>
-<script>
-    //定义一个函数，接受一个参数名作为参数
-    function getQueryVariable(variable) {
-        //获取当前URL中的查询字符串部分（即问号后面的部分）
-        var query = window.location.search.substring(1);
-        //把查询字符串按照&符号分割成数组
-        var vars = query.split("&");
-        //遍历数组中的每个元素
-        for (var i = 0; i < vars.length; i++) {
-            //把当前元素按照=符号分割成键和值
-            var pair = vars[i].split("=");
-            //如果当前元素的键等于参数名，则返回对应的值
-            if (pair[0] == variable) {
-                return pair[1];
-            }
-        }
-        //如果没有找到匹配的参数名，则返回false
-        return false;
-    }
-    // console.log(getQueryVariable("cdn"))
-</script>
+
 <script>
 $(document).ready(function(){
   $("#main").hide();

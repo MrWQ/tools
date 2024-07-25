@@ -196,8 +196,14 @@ function showlist() {
     var l_htmlStr = "";
     var r_htmlStr = "";
     var httpRequest = new XMLHttpRequest();
+
     httpRequest.open('GET', 'https://raw.githubusercontent.com/MrWQ/vulnerability-paper/master/vulnerability-paper.json', true);
     // httpRequest.open('GET', 'https://cdn.jsdelivr.net/gh/MrWQ/vulnerability-paper@master/vulnerability-paper.json', true);
+
+    if (getQueryVariable("cdn") == "1"){
+        console.log("cdn")
+        httpRequest.open('GET', 'https://fastly.jsdelivr.net/gh/MrWQ/vulnerability-paper@master/vulnerability-paper.json', true);
+    }
 
     httpRequest.send();
     httpRequest.onreadystatechange = function () {

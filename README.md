@@ -8,7 +8,7 @@
 ![image-20220111150210937](https://cdn.jsdelivr.net/gh/MrWQ/vulnerability-test-img/img/202201111502038.png)
 ### [反弹shell命令辅助-base64](https://mrwq.github.io/tools/reverseshell1/) <br>
 ![image-20240516162033797](https://cdn.jsdelivr.net/gh/MrWQ/vulnerability-test-img/img/202405161620839.png)
-### [文章搜索](https://mrwq.github.io/tools/paper/) <br>
+### [文章搜索](https://mrwq.github.io/tools/paper/?cdn=1) <br>
 ![image-20211229160204537](https://cdn.jsdelivr.net/gh/MrWQ/vulnerability-test-img/img/202112291602722.png)
 ### [CVE搜索](https://mrwq.github.io/tools/cve/?cdn=1) <br>
 ![image-20220111145838808](https://cdn.jsdelivr.net/gh/MrWQ/vulnerability-test-img/img/202201111458884.png)
