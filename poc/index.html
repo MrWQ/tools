@@ -190,7 +190,20 @@ function showlist() {
     var keyword = $("#search").val().toLowerCase();
     console.log(keyword);
 
-    var url = "https://fastly.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    var url = "https://raw.githubusercontent.com/MrWQ/cve_description/refs/heads/master/cve_description_poc.json"
+    if (getQueryVariable("cdn") == "1"){
+        console.log("cdn")
+        var url = "https://fastly.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    }
+    if (getQueryVariable("cdn") == "2"){
+        console.log("cdn")
+        var url = "https://cdn.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    }
+    if (getQueryVariable("cdn") == "0"){
+        console.log("cdn")
+        var url = "https://purge.jsdelivr.net/gh/MrWQ/cve_description@master/cve_description_poc.json"
+    }
+
 
     var httpRequest = new XMLHttpRequest();
     // httpRequest.open('GET', 'https://cdn.jsdelivr.net/gh/ycdxsb/PocOrExp_in_Github@main/Today.md', true);
